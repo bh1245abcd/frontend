@@ -5,8 +5,9 @@ import {
   getCartItems,
   deleteCartItem,
   getUserIdFromToken,
+  updatecart,
 } from "../api/auth";
-
+import { Trash2 } from "lucide-react";
 
 const Cart = () => {
   const [cartItems, setCartItems] = useState([]);
@@ -16,7 +17,6 @@ const Cart = () => {
   const fetchCartItems = async () => {
     const userId = getUserIdFromToken();
 
-    // ✅ User not logged in
     if (!userId) {
       setCartItems([]);
       setLoading(false);
@@ -32,10 +32,8 @@ const Cart = () => {
         quantity: item.quantity,
         unitPrice: item.unitPrice || 0,
         totalPrice:
-          item.totalPrice ||
-          (item.unitPrice || 0) * item.quantity,
+          item.totalPrice || (item.unitPrice || 0) * item.quantity,
       }));
-
 
       setCartItems(mappedItems);
     } catch (error) {
@@ -49,6 +47,44 @@ const Cart = () => {
   useEffect(() => {
     fetchCartItems();
   }, []);
+
+  // 🔄 UPDATE QUANTITY
+const handleUpdateQuantity = async (item, newQty) => {
+  if (newQty < 1) return;
+
+  try {
+    const userId = getUserIdFromToken();
+
+    const payload = {
+      productId: item.productId, // ✅ exists
+      quantity: newQty,
+      variantId: "",
+      promoCode: "",
+      itemId: item.id,           // ✅ id = itemId
+      userId: userId,
+    };
+
+    console.log("Sending payload:", payload);
+
+    await updatecart(payload);
+
+    // ✅ Update UI
+    setCartItems((prev) =>
+      prev.map((i) =>
+        i.id === item.id
+          ? {
+              ...i,
+              quantity: newQty,
+              totalPrice: i.unitPrice * newQty,
+            }
+          : i
+      )
+    );
+
+  } catch (error) {
+    console.error("Update failed", error);
+  }
+};
 
   // ❌ DELETE ITEM
   const handleDelete = (itemId) => {
@@ -101,6 +137,7 @@ const Cart = () => {
     (sum, item) => sum + item.quantity,
     0
   );
+
   const totalPrice = cartItems.reduce(
     (sum, item) => sum + item.totalPrice,
     0
@@ -113,6 +150,7 @@ const Cart = () => {
       </h2>
 
       <div className="flex flex-col lg:flex-row gap-10">
+        
         {/* 🧾 CART TABLE */}
         <div className="flex-1 overflow-x-auto shadow-lg rounded-xl border border-gray-200">
           <table className="min-w-full bg-white">
@@ -128,26 +166,50 @@ const Cart = () => {
 
             <tbody>
               {cartItems.map((item) => (
-                <tr
-                  key={item.id}
-                  className="border-b border-gray-200 hover:bg-gray-50"
-                >
+                <tr key={item.id} className="border-b hover:bg-gray-50">
+
                   <td className="py-4 px-4">{item.productId}</td>
+
                   <td className="py-4 px-4">
-                    ₹{(item.unitPrice || 0).toLocaleString()}
+                    ₹{item.unitPrice.toLocaleString()}
                   </td>
-                  <td className="py-4 px-4">{item.quantity}</td>
+
+                  {/* 🔥 UPDATED QUANTITY UI */}
+                  <td className="py-4 px-4">
+                    <div className="flex items-center gap-2">
+                      
+                      <button
+                        onClick={() => handleUpdateQuantity(item, item.quantity - 1)}
+                        className="px-2 py-1 bg-gray-200 rounded"
+                      >
+                        -
+                      </button>
+
+                      <span>{item.quantity}</span>
+
+                      <button
+                        onClick={() => handleUpdateQuantity(item, item.quantity + 1)}
+                        className="px-2 py-1 bg-gray-200 rounded"
+                      >
+                        +
+                      </button>
+
+                    </div>
+                  </td>
+
                   <td className="py-4 px-4 font-semibold text-amber-700">
-                    ₹{(item.totalPrice || 0).toLocaleString()}
+                    ₹{item.totalPrice.toLocaleString()}
                   </td>
+
                   <td className="py-4 px-4 text-center">
-                    <button
-                      onClick={() => handleDelete(item.id)}
-                      className="px-4 py-1 text-sm font-semibold text-red-600 border border-red-500 rounded-lg hover:bg-red-600 hover:text-white transition"
-                    >
-                      Delete
-                    </button>
+                   <button
+  onClick={() => handleDelete(item.id)}
+  className="p-2 text-red-600   rounded-lg hover:bg-red-600 hover:text-white transition"
+>
+  <Trash2 className="w-6 h-6" />
+</button>
                   </td>
+
                 </tr>
               ))}
             </tbody>
@@ -155,7 +217,7 @@ const Cart = () => {
         </div>
 
         {/* 📊 SUMMARY */}
-        <div className="w-full lg:w-1/3 border border-gray-200 rounded-xl p-5 bg-gray-50 shadow-md">
+        <div className="w-full lg:w-1/3 border rounded-xl p-5 bg-gray-50 shadow-md">
           <h3 className="text-xl font-semibold mb-4">
             Cart Summary
           </h3>
@@ -175,21 +237,19 @@ const Cart = () => {
             <span>₹{totalPrice.toLocaleString()}</span>
           </div>
 
-          <Link to="/checkout" 
-            state={{
-            cartItems,
-            totalItems,
-            totalPrice,
-          }}>
-            <button className="mt-5 w-full bg-amber-700 text-white py-2 rounded-lg hover:bg-amber-800 transition">
+          <Link
+            to="/checkout"
+            state={{ cartItems, totalItems, totalPrice }}
+          >
+            <button className="mt-5 w-full bg-amber-700 text-white py-2 rounded-lg hover:bg-amber-800">
               Proceed to Checkout
             </button>
           </Link>
         </div>
+
       </div>
     </div>
   );
 };
 
 export default Cart;
-

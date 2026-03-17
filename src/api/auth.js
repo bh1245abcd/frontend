@@ -118,6 +118,12 @@ export const deleteCartItem = async (itemId) => {
   await axiosInstance.delete(`/vasaae/user/cart/remove/${itemId}`);
 };
 
+export const updatecart = async (payload) => {
+  return await axiosInstance.put(
+    "/vasaae/user/cart/update",
+    payload
+  );
+};
 
 //ADD PRODUCT
 export const addProduct = async (payload) => {

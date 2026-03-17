@@ -118,10 +118,13 @@
 
 import React, { useEffect, useState } from "react";
 import { getorders } from "../api/auth";
+import { useNavigate } from "react-router-dom";
 
 const Orders = () => {
 
   const [orders, setOrders] = useState([]);
+
+  const nav = useNavigate()
 
   useEffect(() => {
     const fetchOrders = async () => {
@@ -131,6 +134,7 @@ const Orders = () => {
         if (res?.data?.data?.items) {
           setOrders(res.data.data.items);
         }
+       
 
       } catch (error) {
         console.log("Error fetching orders", error);

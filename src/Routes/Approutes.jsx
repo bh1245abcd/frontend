@@ -17,7 +17,7 @@ import About from "../pages/About";
 import Contact from "../pages/Contact";
 import ProductGrid from "../reusable/productgrid";
 import Orders from "../pages/Orders";
-// import Men from "../pages/Mens";
+import Men from "../pages/Mens";
 // import Women from "../pages/Women";
 // import Kids from "../pages/Kids";
 // import Bangles from "../pages/Bangles";
@@ -64,7 +64,7 @@ const Approutes = () => {
         <Route path="checkout" element={<Checkout />} />
         <Route path="about" element={<About />} />
         <Route path="contact" element={<Contact />} />
-        {/* <Route path="mens" element={<Men />} /> */}
+        <Route path="mens" element={<Men />} />
         {/* <Route path="womens" element={<Women />} /> */}
         {/* <Route path="kids" element={<Kids />} /> */}
         {/* <Route path="bangles" element={<Bangles />} />/ */}
