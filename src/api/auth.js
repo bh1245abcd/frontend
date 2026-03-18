@@ -280,3 +280,15 @@ export const getorders = async() => {
     throw error.response?.data || error;
   }
 }
+
+export const cancelOrder = async (orderId, payload) => {
+  try {
+    const response = await axiosInstance.post(
+      `/vasaae/user/orders/${orderId}/cancel`,
+      payload
+    );
+    return response;
+  } catch (error) {
+    throw error.response?.data || error;
+  }
+};

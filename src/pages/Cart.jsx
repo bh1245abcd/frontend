@@ -49,42 +49,42 @@ const Cart = () => {
   }, []);
 
   // 🔄 UPDATE QUANTITY
-const handleUpdateQuantity = async (item, newQty) => {
-  if (newQty < 1) return;
+  const handleUpdateQuantity = async (item, newQty) => {
+    if (newQty < 1) return;
 
-  try {
-    const userId = getUserIdFromToken();
+    try {
+      const userId = getUserIdFromToken();
 
-    const payload = {
-      productId: item.productId, // ✅ exists
-      quantity: newQty,
-      variantId: "",
-      promoCode: "",
-      itemId: item.id,           // ✅ id = itemId
-      userId: userId,
-    };
+      const payload = {
+        productId: item.productId, // ✅ exists
+        quantity: newQty,
+        variantId: "",
+        promoCode: "",
+        itemId: item.id,           // ✅ id = itemId
+        userId: userId,
+      };
 
-    console.log("Sending payload:", payload);
+      console.log("Sending payload:", payload);
 
-    await updatecart(payload);
+      await updatecart(payload);
 
-    // ✅ Update UI
-    setCartItems((prev) =>
-      prev.map((i) =>
-        i.id === item.id
-          ? {
+      // ✅ Update UI
+      setCartItems((prev) =>
+        prev.map((i) =>
+          i.id === item.id
+            ? {
               ...i,
               quantity: newQty,
               totalPrice: i.unitPrice * newQty,
             }
-          : i
-      )
-    );
+            : i
+        )
+      );
 
-  } catch (error) {
-    console.error("Update failed", error);
-  }
-};
+    } catch (error) {
+      console.error("Update failed", error);
+    }
+  };
 
   // ❌ DELETE ITEM
   const handleDelete = (itemId) => {
@@ -150,7 +150,7 @@ const handleUpdateQuantity = async (item, newQty) => {
       </h2>
 
       <div className="flex flex-col lg:flex-row gap-10">
-        
+
         {/* 🧾 CART TABLE */}
         <div className="flex-1 overflow-x-auto shadow-lg rounded-xl border border-gray-200">
           <table className="min-w-full bg-white">
@@ -177,7 +177,7 @@ const handleUpdateQuantity = async (item, newQty) => {
                   {/* 🔥 UPDATED QUANTITY UI */}
                   <td className="py-4 px-4">
                     <div className="flex items-center gap-2">
-                      
+
                       <button
                         onClick={() => handleUpdateQuantity(item, item.quantity - 1)}
                         className="px-2 py-1 bg-gray-200 rounded"
@@ -202,12 +202,12 @@ const handleUpdateQuantity = async (item, newQty) => {
                   </td>
 
                   <td className="py-4 px-4 text-center">
-                   <button
-  onClick={() => handleDelete(item.id)}
-  className="p-2 text-red-600   rounded-lg hover:bg-red-600 hover:text-white transition"
->
-  <Trash2 className="w-6 h-6" />
-</button>
+                    <button
+                      onClick={() => handleDelete(item.id)}
+                      className="p-2 text-red-600   rounded-lg hover:bg-red-600 hover:text-white transition"
+                    >
+                      <Trash2 className="w-6 h-6" />
+                    </button>
                   </td>
 
                 </tr>

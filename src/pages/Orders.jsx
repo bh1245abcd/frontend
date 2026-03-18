@@ -1,186 +1,110 @@
-// import React, { useEffect, useState } from "react";
-// import { getorders } from "../api/auth";
-
-// const Orders = () => {
-
-//   const [orders, setOrders] = useState([]);
-
-//   useEffect(() => {
-//     const fetchOrders = async () => {
-//       try {
-//         const res = await getorders();
-
-//         if (res?.data?.data?.items) {
-//           setOrders(res.data.data.items);
-//         }
-
-//       } catch (error) {
-//         console.log(error);
-//       }
-//     };
-
-//     fetchOrders();
-//   }, []);
-
-//   return (
-//     <div className="mt-20 px-10">
-
-//       <h2 className="text-3xl font-bold mb-6">Your Orders</h2>
-
-//       <div className="flex gap-10">
-
-//         {/* Orders Table */}
-//         <div className="flex-1 bg-white shadow-lg rounded-xl overflow-hidden">
-
-//           <table className="w-full text-left">
-
-//             <thead className="bg-orange-700 text-white">
-//               <tr>
-//                 <th className="p-4">Order ID</th>
-//                 <th className="p-4">Amount</th>
-//                 <th className="p-4">Payment</th>
-//                 <th className="p-4">Status</th>
-//                 <th className="p-4">Order Date</th>
-//               </tr>
-//             </thead>
-
-//             <tbody>
-
-//               {orders.map((order) => (
-
-//                 <tr key={order.id} className="border-b">
-
-//                   <td className="p-4">{order.id}</td>
-
-//                   <td className="p-4 font-semibold">
-//                     ₹{order.totalAmount}
-//                   </td>
-
-//                   <td className="p-4">
-//                     {order.paymentMethod}
-//                   </td>
-
-//                   <td className="p-4">
-//                     <span className="px-3 py-1 bg-yellow-100 text-yellow-700 rounded">
-//                       {order.status}
-//                     </span>
-//                   </td>
-
-//                   <td className="p-4">
-//                     {new Date(order.orderDate).toLocaleDateString()}
-//                   </td>
-
-//                 </tr>
-
-//               ))}
-
-//             </tbody>
-
-//           </table>
-
-//         </div>
-
-
-//         {/* Order Summary */}
-//         <div className="w-80 bg-white shadow-lg rounded-xl p-6 h-fit">
-
-//           <h3 className="text-xl font-semibold mb-4">Orders Summary</h3>
-
-//           <div className="flex justify-between mb-3">
-//             <span>Total Orders</span>
-//             <span>{orders.length}</span>
-//           </div>
-
-//           <div className="flex justify-between border-b pb-3">
-//             <span>Total Amount</span>
-//             <span>
-//               ₹{orders.reduce((acc, item) => acc + item.totalAmount, 0)}
-//             </span>
-//           </div>
-
-//           <div className="flex justify-between mt-4 font-bold text-orange-700 text-lg">
-//             <span>Total Paid</span>
-//             <span>
-//               ₹{orders.reduce((acc, item) => acc + item.totalAmount, 0)}
-//             </span>
-//           </div>
-
-//         </div>
-
-//       </div>
-
-//     </div>
-//   );
-// };
-
-// export default Orders;
-
-
 import React, { useEffect, useState } from "react";
-import { getorders } from "../api/auth";
-import { useNavigate } from "react-router-dom";
+import { getorders, cancelOrder } from "../api/auth";
+import Swal from "sweetalert2";
 
 const Orders = () => {
-
   const [orders, setOrders] = useState([]);
 
-  const nav = useNavigate()
+  // 📦 FETCH ORDERS
+  const fetchOrders = async () => {
+    try {
+      const res = await getorders();
+
+      if (res?.data?.data?.items) {
+        setOrders(res.data.data.items);
+      }
+    } catch (error) {
+      console.log("Error fetching orders", error);
+    }
+  };
 
   useEffect(() => {
-    const fetchOrders = async () => {
-      try {
-        const res = await getorders();
-
-        if (res?.data?.data?.items) {
-          setOrders(res.data.data.items);
-        }
-       
-
-      } catch (error) {
-        console.log("Error fetching orders", error);
-      }
-    };
-
     fetchOrders();
   }, []);
 
+  // ❌ CANCEL ORDER
+  const handleCancelOrder = async (order) => {
+    const result = await Swal.fire({
+      title: "Cancel Order?",
+      text: "Are you sure you want to cancel this order?",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#dc2626",
+      cancelButtonColor: "#9ca3af",
+      confirmButtonText: "Yes, Cancel",
+    });
+
+    if (!result.isConfirmed) return;
+
+    try {
+      // 🔥 Dynamic Payload
+      const payload = {
+        customerId: order.customerId || "",
+        shippingAddressId: order.shippingAddressId || 0,
+        shippingAddress: order.shippingAddress || {},
+        paymentMethod: order.paymentMethod || "CREDIT_CARD",
+        customerNotes: order.customerNotes || "",
+        currency: order.currency || "INR",
+        discountAmount: order.discountAmount || 0,
+        discountCode: order.discountCode || "",
+        items: order.items || [],
+        reason: "User cancelled order",
+      };
+
+      console.log("Cancel Payload:", payload);
+
+      await cancelOrder(order.id, payload);
+
+      Swal.fire("Cancelled!", "Order has been cancelled", "success");
+
+      // ✅ Update UI instantly
+      setOrders((prev) =>
+        prev.map((o) =>
+          o.id === order.id ? { ...o, status: "CANCELLED" } : o
+        )
+      );
+    } catch (error) {
+      console.error("Cancel failed", error);
+      Swal.fire("Error", "Failed to cancel order", "error");
+    }
+  };
+
   return (
-    <div className="mt-20 px-10">
+    <div className="min-h-screen mt-24 px-6 md:px-10 bg-gray-50">
+      <h2 className="text-3xl font-bold mb-6 text-gray-800">
+        Your Orders
+      </h2>
 
-      <h2 className="text-3xl font-bold mb-6">Your Orders</h2>
-
-      <div className="bg-white shadow-lg rounded-xl overflow-hidden">
-
-        <table className="w-full text-left">
-
+      <div className="bg-white shadow-lg rounded-xl overflow-x-auto">
+        <table className="w-full text-left min-w-[900px]">
           <thead className="bg-orange-700 text-white">
             <tr>
               <th className="p-4">Order ID</th>
               <th className="p-4">Amount</th>
               <th className="p-4">Payment Method</th>
-              <th className="p-4">Payment Done</th>
+              <th className="p-4">Payment</th>
               <th className="p-4">Status</th>
               <th className="p-4">Order Date</th>
+              <th className="p-4 text-center">Action</th>
             </tr>
           </thead>
 
           <tbody>
-
             {orders.length === 0 ? (
               <tr>
-                <td colSpan="6" className="text-center p-6">
+                <td colSpan="7" className="text-center p-6">
                   No Orders Found
                 </td>
               </tr>
             ) : (
-
               orders.map((order) => (
-
-                <tr key={order.id} className="border-b">
-
+                <tr
+                  key={order.id}
+                  className="border-b hover:bg-gray-50"
+                >
                   <td className="p-4">{order.id}</td>
 
-                  <td className="p-4 font-semibold">
+                  <td className="p-4 font-semibold text-amber-700">
                     ₹{order.totalAmount}
                   </td>
 
@@ -189,11 +113,17 @@ const Orders = () => {
                   </td>
 
                   <td className="p-4">
-                    {order.paymentDone ? "Yes" : "No"}
+                    {order.paymentDone ? "✅ Done" : "❌ Pending"}
                   </td>
 
                   <td className="p-4">
-                    <span className="px-3 py-1 bg-yellow-100 text-yellow-700 rounded">
+                    <span
+                      className={`px-3 py-1 rounded text-sm ${
+                        order.status === "CANCELLED"
+                          ? "bg-red-100 text-red-600"
+                          : "bg-yellow-100 text-yellow-700"
+                      }`}
+                    >
                       {order.status}
                     </span>
                   </td>
@@ -202,18 +132,26 @@ const Orders = () => {
                     {new Date(order.orderDate).toLocaleDateString()}
                   </td>
 
+                  <td className="p-4 text-center">
+                    {order.status !== "CANCELLED" ? (
+                      <button
+                        onClick={() => handleCancelOrder(order)}
+                        className="bg-red-600 text-white px-3 py-1 rounded hover:bg-red-700 transition"
+                      >
+                        Cancel
+                      </button>
+                    ) : (
+                      <span className="text-gray-400 text-sm">
+                        Cancelled
+                      </span>
+                    )}
+                  </td>
                 </tr>
-
               ))
-
             )}
-
           </tbody>
-
         </table>
-
       </div>
-
     </div>
   );
 };

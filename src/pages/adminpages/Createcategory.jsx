@@ -6,7 +6,7 @@ const CreateCategory = () => {
     name: "",
     description: "",
     active: true,
-    flag: "",
+    flag: "Y", // ✅ default value
   });
 
   const [message, setMessage] = useState("");
@@ -14,26 +14,36 @@ const CreateCategory = () => {
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
 
-    setFormData((prev) => ({
-      ...prev,
-      [name]: type === "checkbox" ? checked : value,
-    }));
+    // ✅ flag logic (only y / n control)
+    if (name === "flag") {
+      setFormData((prev) => ({
+        ...prev,
+        flag: checked ? "N" : "Y",
+      }));
+    } else {
+      setFormData((prev) => ({
+        ...prev,
+        [name]: type === "checkbox" ? checked : value,
+      }));
+    }
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
 
     try {
-      console.log("Payload:", formData); // ✅ debug
+      console.log("Payload:", formData);
 
       await createCategory(formData);
 
       setMessage("💎 Category added successfully!");
+
+      // ✅ reset form
       setFormData({
         name: "",
         description: "",
         active: true,
-        flag: "",
+        flag: "y",
       });
 
     } catch (error) {
@@ -91,19 +101,18 @@ const CreateCategory = () => {
               />
             </div>
 
-            {/* Flag */}
-            <div>
-              <label className="block mb-1 font-semibold text-gray-700">
-                Flag
-              </label>
+            {/* Flag Checkbox */}
+            <div className="flex items-center gap-3 mt-6">
               <input
-                type="text"
+                type="checkbox"
                 name="flag"
-                value={formData.flag}
+                checked={formData.flag === "N"} // ✅ checked = n
                 onChange={handleChange}
-                placeholder="e.g. FEATURED / NEW"
-                className="w-full px-4 py-3 border rounded-lg"
+                className="w-5 h-5"
               />
+              <label className="font-semibold text-gray-700">
+                Set Flag = N
+              </label>
             </div>
 
             {/* Active */}
