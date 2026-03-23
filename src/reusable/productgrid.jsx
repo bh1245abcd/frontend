@@ -121,10 +121,10 @@ const ProductGrid = () => {
 
       {/* Top Bar */}
       <div className="flex flex-wrap justify-between items-center border-b pb-4 mb-10">
-        <div className="flex items-center gap-3 text-gray-700 font-medium border rounded-lg px-2 py-1" onClick={() => setfilters(true)}>
+        {/* <div className="flex items-center gap-3 text-gray-700 font-medium border rounded-lg px-2 py-1" onClick={() => setfilters(true)}>
           <Filter className="w-5 h-5 text-amber-700" />
           <span>Filters</span>
-        </div>
+        </div> */}
 
         <div className="text-gray-600">
           Showing <span className="font-semibold">{products.length}</span> Products
