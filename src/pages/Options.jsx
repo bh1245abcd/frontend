@@ -117,7 +117,7 @@ const Options = () => {
   return (
     <div className="bg-white py-3 mb-1 border-b border-gray-300">
       {/* MOBILE HEADER */}
-      <div className="md:hidden flex justify-center px-4">
+      <div className="md:hidden flex justify-center px-4 mt-4">
         <button
           onClick={() => setSidebarOpen(true)}
           className="flex items-center gap-2 text-gray-700 font-medium"

@@ -18,12 +18,12 @@ import Contact from "../pages/Contact";
 import ProductGrid from "../reusable/productgrid";
 import Orders from "../pages/Orders";
 import Men from "../pages/Mens";
-// import Women from "../pages/Women";
-// import Kids from "../pages/Kids";
-// import Bangles from "../pages/Bangles";
-// import Earings from "../pages/Earings";
-// import Fingerrings from "../pages/Fingerrings";
-// import Pandents from "../pages/Pandents";
+import Women from "../pages/Women";
+import Kids from "../pages/Kids";
+import Bangles from "../pages/Bangles";
+import Earings from "../pages/Earings";
+import Fingerrings from "../pages/Fingerrings";
+import Pandents from "../pages/Pandents";
 
 // ✅ Dynamic Category Page
 
@@ -65,12 +65,12 @@ const Approutes = () => {
         <Route path="about" element={<About />} />
         <Route path="contact" element={<Contact />} />
         <Route path="mens" element={<Men />} />
-        {/* <Route path="womens" element={<Women />} /> */}
-        {/* <Route path="kids" element={<Kids />} /> */}
-        {/* <Route path="bangles" element={<Bangles />} />/ */}
-        {/* <Route path="earrings" element={<Earings />} /> */}
-        {/* <Route path="fingerings" element={<Fingerrings />} /> */}
-        {/* <Route path="pendents" element={<Pandents />} /> */}
+        <Route path="womens" element={<Women />} />
+        <Route path="kids" element={<Kids />} />
+        <Route path="bangles" element={<Bangles />} />
+        <Route path="earrings" element={<Earings />} />
+        <Route path="fingerings" element={<Fingerrings />} />
+        <Route path="pendents" element={<Pandents />} />
         <Route path="about" element={<About />} />
         <Route path="orders" element={<Orders />} />
         <Route path=":category/:categoryId/:subId?" element={<ProductGrid />} />

@@ -1,27 +1,20 @@
 import React from "react";
+import { useNavigate } from "react-router-dom";
+
 import bangles from "../assets/bangles.jpg";
 import earrings from "../assets/earrings.webp";
 import fingerings from "../assets/fingerings.jpg";
 import pendents from "../assets/pendents.webp";
-import Swal from "sweetalert2";
 
 const PerfectMatch = () => {
+  const navigate = useNavigate();
 
   const items = [
-    { name: "Bangles", image: bangles },
-    { name: "Earrings", image: earrings },
-    { name: "Finger Rings", image: fingerings },
-    { name: "Pendants", image: pendents },
+    { name: "Bangles", image: bangles, path: "/bangles" },
+    { name: "Earrings", image: earrings, path: "/earrings" },
+    { name: "Finger Rings", image: fingerings, path: "/fingerings" },
+    { name: "Pendants", image: pendents, path: "/pendents" },
   ];
-
-  // 🔥 Coming Soon Alert
-  const handleComingSoon = () => {
-    Swal.fire({
-      icon: "info",
-      text: "This category will be available soon!",
-      confirmButtonColor: "#b45309",
-    });
-  };
 
   return (
     <section className="py-16 bg-gray-50">
@@ -39,7 +32,7 @@ const PerfectMatch = () => {
         {items.map((item, index) => (
           <div
             key={index}
-            onClick={handleComingSoon}
+            onClick={() => navigate(item.path)}
             className="relative group rounded-3xl overflow-hidden shadow-2xl cursor-pointer hover:scale-105 transition-transform duration-500"
           >
             
