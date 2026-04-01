@@ -21,7 +21,7 @@ const AdminLayout = () => {
     flex: 1,
     padding: "20px",
     backgroundColor: "#f3f4f6",
-    overflowY: "auto",
+    // overflowY: "auto",
   };
 
   const sidebarStyle = {
